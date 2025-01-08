@@ -14,4 +14,9 @@ export class AppController {
   getGreat(): string {
     return this.appService.getGreat();
   }
+
+  @Post()
+  isPalindrome(@Body() body: any): any {
+    return this.appService.isPalindrome(body.str);
+  }
 }
