@@ -106,6 +106,7 @@ export class AppService {
   }
 
   async hasReview(userId) {
+    const runner = this.dataSource.createQueryRunner('slave')
     const sql = `SELECT COUNT(id)
                FROM (SELECT a.id AS id
                      FROM common.reviews a
@@ -118,7 +119,7 @@ export class AppService {
                                        ON b.id = a.product_id
                      WHERE b.user_id = ?
                        AND a.is_valid = 1) AS t`;
-    const reviews = await this.dataSource.query(sql, [userId, userId]);
+    const reviews = await runner.query(sql, [userId, userId]);
     return reviews[0].cnt || 0;
   }
 
