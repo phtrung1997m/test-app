@@ -46,11 +46,12 @@ export class AppService {
     return str === reversed;
   }
 
-  async getTotalSalesForYear(year: number): Promise<number> {
+  async getTotalSalesForYear(year: number, isSort: any): Promise<number> {
     const query = `
       SELECT SUM(TotalAmount)
       FROM Orders
       WHERE EXTRACT(YEAR FROM OrderDate) = $1
+      ${isSort ? 'ORDER BY TotalAmount DESC' : ''}
     `;
 
     const result = await this.dataSource.query(query, [year]);
