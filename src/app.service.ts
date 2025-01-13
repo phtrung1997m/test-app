@@ -86,7 +86,7 @@ export class AppService {
   }
 
   async addAvailableCommunities(userId: number, saleSessionId: string) {
-    const RETRY_COUNT = 3;
+    const COUNT = 3;
     if (!userId || !saleSessionId) {
       return;
     }
@@ -98,7 +98,7 @@ export class AppService {
         });
       } catch (e) {
         console.error(e);
-        if (i === RETRY_COUNT - 1) {
+        if (i === COUNT - 1) {
           throw e;
         }
         await new Promise((resolve) => setTimeout(resolve, i * 200)); // 200ms, 400ms, 600ms
