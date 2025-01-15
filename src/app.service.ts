@@ -1,5 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import * as fs from 'fs';
+import * as path from 'path';
+
+const DEFAULT_CAR_PROPERTIES = {
+  carColor: 'red',
+  carMake: 'Toyota',
+  carModel: 'Corolla',
+}
+
+class Subs {
+public ccId: number;
+public billingAddrId: number;
+public shippingAddrId: number;
+}
 
 @Injectable()
 export class AppService {
@@ -86,7 +100,7 @@ export class AppService {
   }
 
   async addAvailableCommunities(userId: number, saleSessionId: string) {
-    const COUNT = 3;
+    const RETRY_COUNT = 3;
     if (!userId || !saleSessionId) {
       return;
     }
@@ -98,7 +112,7 @@ export class AppService {
         });
       } catch (e) {
         console.error(e);
-        if (i === COUNT - 1) {
+        if (i === RETRY_COUNT - 1) {
           throw e;
         }
         await new Promise((resolve) => setTimeout(resolve, i * 200)); // 200ms, 400ms, 600ms
@@ -155,4 +169,121 @@ export class AppService {
       10,
     ]);
   }
+
+  checkAccess(user: any): void {
+    const isNotAdmin = !user.isAdmin;
+    if (isNotAdmin) {
+      console.log("Access denied. User is not an admin.");
+    } else {
+      console.log("Access granted. Welcome, admin!");
+    }
+  }
+
+  processCustomerData(user) {
+    if (user !== null && user !== undefined) {
+      if (user.customer) {
+        console.log("Processing customer data.");
+        // More processing logic here (Happy Path)
+      } else {
+        console.log("User is not a customer.");
+        return;
+        // Edge Case
+      }
+    } else {
+      console.log("No user data provided.");
+      // Edge Case
+    }
+  }
+
+  findUser(users, username) {
+    let result = null;
+    for (const user of users) {
+      if (user.username === username) {
+        result = user;
+      }
+    }
+    return result;
+  }
+
+  processTransactions(transactions, limit) {
+    for (const transaction of transactions) {
+      if (transaction.status === 'invalid') {
+        console.log(`Skipping invalid transaction: ${transaction.id}`);
+      } else {
+        if (transaction.amount > limit) {
+          console.log(`Alert! Transaction ${transaction.id} exceeds the limit.`);
+        } else {
+          console.log(`Processing transaction: ${transaction.id} with amount ${transaction.amount}`);
+        }
+        // Continue checking even after finding a large transaction
+      }
+    }
+  }
+
+  processFilesInDirectory(directory) {
+    if (fs.existsSync(directory)) {
+      const files = fs.readdirSync(directory);
+      if (files.length > 0) {
+        for (const file of files) {
+          const filePath = path.join(directory, file);
+          if (fs.existsSync(filePath)) {
+            // This is what our function is supposed to do
+            console.log(`Processing file: ${file}`);
+            this.processFile(file);
+          } else {
+            console.log(`Cannot read file: ${file}`);
+          }
+        }
+      } else {
+        console.log("No files to process in the directory.");
+      }
+    } else {
+      console.log("Directory does not exist.");
+    }
+  }
+
+  processFile(file) {
+    // Simulate file processing
+    console.log(`File processed: ${file}`);
+  }
+
+  hasAccess(role, isActive) {
+    let access = false; // Flag variable
+    if (role === 'admin' && isActive) {
+      access = true;
+    }
+    return access;
+  }
+
+  isPrime(n) {
+    // Handle edge cases for numbers less than or equal to 1
+    if (n <= 1) {
+      return false;
+    }
+
+    // Check divisibility for potential factors up to the square root of n
+    for (let i = 2; i <= Math.sqrt(n); i++) {
+      if (n % i === 0) {
+        return false;
+      }
+    }
+
+    // If no divisors found, the number is prime
+    return true;
+  }
+}
+
+const studentsList = [
+  { id: 101, name: "Alice", grade: "A" },
+  { id: 102, name: "Bob", grade: "B" },
+  { id: 103, name: "Charlie", grade: "C" },
+];
+
+function findStudentById(studentId, students) {
+  for (const student of students) {
+    if (student.id === studentId) {
+      return student;
+    }
+  }
+  return null;
 }
