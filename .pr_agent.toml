@@ -105,3 +105,5 @@ Please review the provided code with a focus on the following aspects:
 
 Provide constructive, specific suggestions for improvement, adhering to Google's TypeScript/JavaScript Style Guide and secure coding practices.
 """
+dual_publishing_score_threshold = 0
+num_code_suggestions_per_chunk=100
